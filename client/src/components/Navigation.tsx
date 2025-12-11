@@ -1,3 +1,4 @@
+"use client"
 import { useState } from 'react';
 import { Menu, X, Search, ChevronDown } from 'lucide-react';
 
@@ -57,7 +58,7 @@ const Navigation = () => {
               </div>
               <div className="flex items-center gap-1 text-sm font-body text-foreground">
                 <span>English</span>
-                <ChevronDown size={14} />
+                {/* <ChevronDown size={14} /> */}
               </div>
             </div>
           </div>
@@ -87,9 +88,9 @@ const Navigation = () => {
                   DermaCosmetics
                 </span>
               </div>
-              <span className="hidden sm:block font-body text-[10px] text-muted-foreground ml-2 uppercase tracking-wider leading-tight">
+              {/* <span className="hidden sm:block font-body text-[10px] text-muted-foreground ml-2 uppercase tracking-wider leading-tight">
                 Developed with<br/>Dermatologists
-              </span>
+              </span> */}
             </a>
 
             {/* Desktop Navigation */}
