@@ -1,139 +1,64 @@
 "use client"
 import { useState } from 'react';
 import { Mail, Phone, Lock, User, CheckCircle2 } from 'lucide-react';
+import * as Yup from "yup";
+import { useRouter } from 'next/navigation';
+import axios from "axios";
+import { toast } from 'sonner';
 
-export default function Register() {
-  const [registerMethod, setRegisterMethod] = useState('email');
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [formData, setFormData] = useState({
+// Define validation schema using Yup
+const validationSchema = Yup.object({
+  email: Yup.string()
+    .email("Please enter a valid email address")
+    .required("Email is required"),
+  password: Yup.string()
+    .min(8, "Password must be at least 8 characters")
+    .matches(/[A-Z]/, "Password must contain at least one uppercase letter")
+    .matches(/[a-z]/, "Password must contain at least one lowercase letter")
+    .matches(/[0-9]/, "Password must contain at least one number")
+    .required("Password is required"),
+  phoneNumber: Yup.string()
+    .matches(/^\+?[\d\s\-()]+$/, "Please enter a valid phone number")
+    .min(10, "Phone number must be at least 10 digits")
+    .required("Phone number is required"),
+//   role: Yup.string()
+//     .oneOf(['user', 'admin'], "Please select a valid role")
+//     .required("Role is required"),
+});
+
+const Register = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+
+  const router = useRouter()
+
+  const initialValues = {
     email: '',
     phoneNumber: '',
     password: '',
-    confirmPassword: ''
-  });
-  const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState('');
-  const [errors, setErrors] = useState({});
-
-  const handleInputChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
-    // Clear error for this field when user starts typing
-    if (errors[e.target.name]) {
-      setErrors({
-        ...errors,
-        [e.target.name]: ''
-      });
-    }
+    role: '', 
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-
-    // Validate email or phone
-    if (registerMethod === 'email') {
-      if (!formData.email) {
-        newErrors.email = 'Email is required';
-      } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-        newErrors.email = 'Please enter a valid email address';
-      }
-    } else {
-      if (!formData.phoneNumber) {
-        newErrors.phoneNumber = 'Phone number is required';
-      } else if (!/^\+?[\d\s\-()]+$/.test(formData.phoneNumber)) {
-        newErrors.phoneNumber = 'Please enter a valid phone number';
-      }
-    }
-
-    // Validate password
-    if (!formData.password) {
-      newErrors.password = 'Password is required';
-    } else if (formData.password.length < 8) {
-      newErrors.password = 'Password must be at least 8 characters';
-    }
-
-    // Validate confirm password
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = 'Please confirm your password';
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = 'Passwords do not match';
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      return;
-    }
-
+   const handleSubmit = async(values: typeof initialValues, { setSubmitting }: any) => {
     setIsLoading(true);
-    setMessage('');
-
-    // Prepare data based on register method
-    const registerData = {
-      password: formData.password,
-      role: 'user', // Default role from your schema
-      ...(registerMethod === 'email' 
-        ? { email: formData.email }
-        : { phoneNumber: formData.phoneNumber }
-      )
-    };
-
     try {
-      // Replace with your actual API endpoint
-      const response = await fetch('/api/auth/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(registerData)
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        setMessage('Registration successful! Please wait for admin approval.');
-        // Reset form
-        setFormData({
-          email: '',
-          phoneNumber: '',
-          password: '',
-          confirmPassword: ''
-        });
-      } else {
-        setMessage(data.message || 'Registration failed. Please try again.');
+      const { data } = await axios.post(process.env.NEXT_PUBLIC_API_URL + '/register', values);
+      toast.success(data.message || 'Registration successful!');
+      
+      // If registration is successful and user is logged in, redirect
+      if (data?.isLoggedIn) {
+        router.push('/');
       }
-    } catch (error) {
-      setMessage('An error occurred. Please try again.');
+    } catch (error: any) {
+      console.error("Registration failed:", error);
+      const errorMessage = error.response?.data?.message || 'Registration failed. Please try again.';
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
+      setSubmitting(false);
     }
   };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-      handleSubmit();
-    }
-  };
-
-  const passwordStrength = (password) => {
-    if (!password) return 0;
-    let strength = 0;
-    if (password.length >= 8) strength++;
-    if (password.length >= 12) strength++;
-    if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
-    if (/\d/.test(password)) strength++;
-    if (/[^a-zA-Z0-9]/.test(password)) strength++;
-    return strength;
-  };
-
-  const strength = passwordStrength(formData.password);
-  const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-lime-500', 'bg-green-500'];
-  const strengthLabels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-white flex items-center justify-center p-4">
@@ -229,30 +154,7 @@ export default function Register() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Password
               </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Create a strong password"
-                  className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${
-                    errors.password ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
-              )}
+        
               
               {/* Password Strength Indicator */}
               {formData.password && (
@@ -279,26 +181,7 @@ export default function Register() {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Confirm Password
               </label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-                <input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  name="confirmPassword"
-                  value={formData.confirmPassword}
-                  onChange={handleInputChange}
-                  onKeyPress={handleKeyPress}
-                  placeholder="Re-enter your password"
-                  className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition ${
-                    errors.confirmPassword ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                >
-                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                </button>
+              
               </div>
               {errors.confirmPassword && (
                 <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
@@ -352,7 +235,7 @@ export default function Register() {
 
         {/* Footer */}
         <p className="text-center text-gray-500 text-sm mt-8">
-          © 2024 CeraVe. All rights reserved.
+          © 2025 LYRADerma. All rights reserved.
         </p>
       </div>
     </div>
