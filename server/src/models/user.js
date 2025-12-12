@@ -10,7 +10,6 @@ const userSchema = new Schema({
   },
   password: String,
   isApproved: { type: Boolean, default: false },
-  // location: String
 
 });
 const User = mongoose.model('User', userSchema);
