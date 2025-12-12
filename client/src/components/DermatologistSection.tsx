@@ -14,11 +14,9 @@ const DermatologistSection = () => {
             </div> */}
             <div className="relative p-3 rounded-2xl shadow-lg flex items-center justify-center overflow-hidden">
               <img
-                className="aspect-square md:aspect-[4/3] rounded-lg overflow-hidden"
+                className="w-full h-full object-cover rounded-lg overflow-hidden"
                 src="/ingredients-hero.jpg"
                 alt="ingredient pic"
-                width={500}
-                height={500}
               />
             </div>
           </div>

@@ -145,9 +145,9 @@ const HeroSection = () => {
       </div>
 
       {/* Scrolling benefit ticker */}
-      <div className="bg-cerave-light-blue py-3 overflow-hidden">
-        <div className="ticker-wrapper">
-          <div className="ticker-content">
+      <div className="bg-LYRA-light-blue py-3 overflow-hidden">
+        <div className="ticker-wrapper w-full overflow-hidden">
+          <div className="ticker-content flex w-[200%] animate-ticker">
             {[...Array(2)].map((_, i) => (
               <div key={i} className="flex items-center">
                 <span className="font-display text-sm text-primary font-medium px-6">Developed With Dermatologists</span>
