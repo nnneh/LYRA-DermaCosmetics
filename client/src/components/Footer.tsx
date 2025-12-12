@@ -33,11 +33,11 @@ const Footer = () => {
                 Lyra
               </span>
               <span className="font-display text-lg font-normal text-background/80">
-                Ve
+                DermaCosmetics
               </span>
             </div>
             <p className="font-body text-sm text-background/70 leading-relaxed max-w-sm">
-              The #1 Dermatologist Recommended Skincare Brand. Developed with dermatologists, Lyra delivers effective, affordable skincare for all.
+              The #1 Dermatologist Recommended Skincare Brand. Developed with dermatologists, Lyra DermaCosmetics delivers effective, affordable skincare for all.
             </p>
             <div className="flex gap-4">
               {[Facebook, Instagram, Twitter, Youtube].map((Icon, index) => (
