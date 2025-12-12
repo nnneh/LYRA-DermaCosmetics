@@ -19,8 +19,8 @@ const Navigation = () => {
       </div>
 
       {/* Secondary nav & Search Bar */}
-      <div className="border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-end py-2 space-x-6 text-sm text-gray-700 font-sans">
           <div className="hidden md:flex items-center justify-between py-2">
             <div className="flex items-center gap-6">
               {topLinks.map((link) => (
@@ -33,7 +33,7 @@ const Navigation = () => {
                 </a>
               ))}
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 px-4">
               <div className="relative">
                 <input
                   type="text"
@@ -44,10 +44,10 @@ const Navigation = () => {
                   <Search size={14} />
                 </button>
               </div>
-              <div className="flex items-center gap-1 text-sm font-sans text-gray-800">
+              {/* <div className="flex items-center gap-1 text-sm font-sans text-gray-800">
                 <span>English</span>
                 <ChevronDown size={14} />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
