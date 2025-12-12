@@ -17,8 +17,8 @@ const DermatologistSection = () => {
                 className="aspect-square md:aspect-[4/3] rounded-lg overflow-hidden"
                 src="/ingredients-hero.jpg"
                 alt="ingredient pic"
-                width={120}
-                height={120}
+                width={500}
+                height={500}
               />
             </div>
           </div>
